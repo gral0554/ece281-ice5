@@ -95,13 +95,39 @@ begin
 	-- CONCURRENT STATEMENTS ------------------------------------------------------------------------------
 	
 	-- Next State Logic
-  
+	f_Q_next <= s_floor1 when (f_Q = s_floor1 and (i_up_down = '0') and (i_stop = '0')) or
+	                          (f_Q = s_floor2 and (i_up_down = '0') and (i_stop = '0')) or
+	                          (f_Q = s_floor1 and (i_stop = '1')) else
+	            s_floor2 when (f_Q = s_floor1 and (i_up_down = '1') and (i_stop = '0')) or
+	                          (f_Q = s_floor2 and (i_stop = '1')) or
+	                          (f_Q = s_floor3 and (i_up_down = '0') and (i_stop = '0')) else
+	            s_floor3 when (f_Q = s_floor2 and (i_up_down = '1') and (i_stop = '0')) or
+	                          (f_Q = s_floor3 and (i_stop = '1')) or
+	                          (f_Q = s_floor4 and (i_up_down = '0') and (i_stop = '0')) else
+	            s_floor4 when (f_Q = s_floor4 and (i_up_down = '1') and (i_stop = '0')) or
+	                          (f_Q = s_floor4 and (i_stop = '1')) or
+	                          (f_Q = s_floor3 and (i_up_down = '0') and (i_stop = '0')) else
+	            s_floor2;
+	
+	
 	-- Output logic
-
+    o_floor <= "0001" when f_Q = s_floor1 else
+               "0010" when f_Q = s_floor2 else
+               "0011" when f_Q = s_floor3 else
+               "0100";
 	-------------------------------------------------------------------------------------------------------
 	
 	-- PROCESSES ------------------------------------------------------------------------------------------	
-	
+	state_process: process(i_clk)
+        begin
+            if (rising_edge(i_clk)) then
+                if (i_reset = '1') then
+                   f_Q <= s_floor2;
+                else
+                   f_Q <= f_Q_next;
+                end if;
+            end if;
+        end process;
 	-- State register ------------
 	
 	
